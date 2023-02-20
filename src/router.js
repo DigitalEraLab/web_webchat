@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/pages/Home/Home.vue";
+import modify from "@/pages/Home/modify.vue";
 
 export default createRouter({
   history: createWebHistory(),
@@ -7,6 +8,10 @@ export default createRouter({
     {
       path: "/",
       component: Home,
+    },
+    {
+      path: "/modify",
+      component: modify,
     },
   ],
 });

@@ -3,7 +3,7 @@
     <!-- 登录注册弹出框 -->
     <el-dialog
       v-model="isToLogin"
-      title="欢迎使用智慧聊天系统"
+      title="欢迎使用智能文案编辑系统"
       @closed="closeDialog(ruleFormRef)"
       style="width: 30%"
     >
@@ -69,6 +69,13 @@
         show-word-limit
         type="text"
         v-if="iseditorTitle"
+      />
+      <el-input
+        v-model="newStyle"
+        placeholder="请输入需要修改的风格"
+        show-word-limit
+        type="text"
+        v-if="iseditorContent"
       />
       <template #footer>
         <span class="dialog-footer">
@@ -143,7 +150,7 @@
                 <div class="content">
                   <textarea
                     v-model="textarea2"
-                    placeholder="请输入要修改的文案"
+                    placeholder="请输入要修改的文案,点击下一步选择修改的风格"
                     class="content_msg"
                   ></textarea>
                 </div>
@@ -153,7 +160,7 @@
                 v-loading="loading"
                 @click="sendmsg"
                 class="SendLogo"
-                >发送</el-button
+                >下一步</el-button
               >
             </div>
           </el-footer>
@@ -245,7 +252,7 @@
                 您还不是vip,剩余访问次数{{ RemainingTimes }}次数
               </div>
               <div v-if="isvip" class="lists_item_bottom">
-                尊贵的vip,欢迎使用智慧聊天系统
+                欢迎使用智能文案编辑系统
               </div>
             </div>
           </div>
@@ -274,9 +281,9 @@ import FormRules from "element-plus";
 
 // 表单数据
 const ruleForm = reactive({
-  pass: "",
+  pass: "xcf123456",
   checkPass: "",
-  name: "",
+  name: "xcf123456",
 });
 // 弹出提示的内容
 
@@ -326,6 +333,11 @@ const chooseSessionB = ref(0);
 const RemainingTimes = ref(0);
 // 是否修改标题
 const iseditorTitle = ref(false);
+// 是否修改内容、风格
+const iseditorContent = ref(false);
+// 修改的风格
+const newStyle = ref("");
+
 // 新的表单title
 const newSessionTitle = ref("");
 
@@ -401,6 +413,49 @@ const dialogSubmit = (e) => {
         title: newSessionTitle.value,
       });
     });
+  }
+  // 修改风格
+  if (e.button == "发送" && iseditorContent) {
+    chatmsg.value.push(textarea2.value);
+    chatmsg.value.push("");
+    isLoading.value = true;
+    clearInputHeight();
+    toBottom();
+    chat({
+      message: textarea2.value + "以上文字" + newStyle.value,
+      sessionId: chooseSessionS.value,
+    })
+      .then((res) => {
+        // 发送失败，再次发送
+        console.log("消息", res);
+        if (res.code == 500) {
+          chatmsg.value.splice(chatmsg.value.length - 1, 1, "发送失败,请重试");
+          isLoading.value = false;
+          clearInputHeight();
+          toBottom();
+          return;
+        } else {
+          if (res.code == -1) {
+            chatmsg.value.splice(chatmsg.value.length - 1, 1);
+            chatmsg.value.splice(chatmsg.value.length - 1, 1);
+            isLoading.value = false;
+            textarea2.value = "";
+            dialogCustomize({ title: "提示", content: "体验次数完毕" });
+            return;
+          } else {
+            RemainingTimes.value = res.data.times;
+            chatmsg.value.splice(chatmsg.value.length - 1, 1);
+            chatmsg.value.push(res.data.reply);
+            isLoading.value = false;
+            textarea2.value = "";
+            toBottom();
+            return;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
   dialogVisible.value = false;
 };
@@ -600,10 +655,11 @@ const sendmsg = () => {
   } else {
     if (!token) {
       // 游客
-      chatmsg.value.push(textarea2.value);
-      chatmsg.value.push("");
-      isLoading.value = true;
-      toBottom();
+      // chatmsg.value.push(textarea2.value);
+      // chatmsg.value.push("");
+      // isLoading.value = true;
+      // toBottom();
+
       chat({
         message: textarea2.value,
         sessionId: sessionid.value,
@@ -635,10 +691,19 @@ const sendmsg = () => {
               RemainingTimes.value = res.data.experienceTimes;
               chatmsg.value.splice(chatmsg.value.length - 1, 1);
               chatmsg.value.push(res.data.reply);
-              textarea2.value = "";
-              isLoading.value = false;
-              clearInputHeight();
-              toBottom();
+              // textarea2.value = "";
+              // isLoading.value = false;
+              // clearInputHeight();
+              // toBottom();
+
+              iseditorContent.value = true;
+              // newSessionTitle.value = e.title;
+              dialogCustomize({
+                title: "请输入修改的风格",
+                content: "",
+                button: "发送",
+              });
+
               return;
             }
           }
@@ -662,50 +727,54 @@ const sendmsg = () => {
             dialogCustomize({ content: "请输入文本信息" });
             return;
           }
-          chatmsg.value.push(textarea2.value);
-          chatmsg.value.push("");
-          isLoading.value = true;
-          clearInputHeight();
-          toBottom();
-          chat({
-            message: textarea2.value,
-            sessionId: chooseSessionS.value,
-          })
-            .then((res) => {
-              // 发送失败，再次发送
-              console.log("消息", res);
-              if (res.code == 500) {
-                chatmsg.value.splice(
-                  chatmsg.value.length - 1,
-                  1,
-                  "发送失败,请重试"
-                );
-                isLoading.value = false;
-                clearInputHeight();
-                toBottom();
-                return;
-              } else {
-                if (res.code == -1) {
-                  chatmsg.value.splice(chatmsg.value.length - 1, 1);
-                  chatmsg.value.splice(chatmsg.value.length - 1, 1);
-                  isLoading.value = false;
-                  textarea2.value = "";
-                  dialogCustomize({ title: "提示", content: "体验次数完毕" });
-                  return;
-                } else {
-                  RemainingTimes.value = res.data.times;
-                  chatmsg.value.splice(chatmsg.value.length - 1, 1);
-                  chatmsg.value.push(res.data.reply);
-                  isLoading.value = false;
-                  textarea2.value = "";
-                  toBottom();
-                  return;
-                }
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+
+          iseditorContent.value = true;
+          // newSessionTitle.value = e.title;
+          dialogCustomize({
+            title: "请输入修改的风格",
+            content: "",
+            button: "发送",
+          });
+
+          // chat({
+          //   message: textarea2.value,
+          //   sessionId: chooseSessionS.value,
+          // })
+          //   .then((res) => {
+          //     // 发送失败，再次发送
+          //     console.log("消息", res);
+          //     if (res.code == 500) {
+          //       chatmsg.value.splice(
+          //         chatmsg.value.length - 1,
+          //         1,
+          //         "发送失败,请重试"
+          //       );
+          //       isLoading.value = false;
+          //       clearInputHeight();
+          //       toBottom();
+          //       return;
+          //     } else {
+          //       if (res.code == -1) {
+          //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
+          //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
+          //         isLoading.value = false;
+          //         textarea2.value = "";
+          //         dialogCustomize({ title: "提示", content: "体验次数完毕" });
+          //         return;
+          //       } else {
+          //         RemainingTimes.value = res.data.times;
+          //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
+          //         chatmsg.value.push(res.data.reply);
+          //         isLoading.value = false;
+          //         textarea2.value = "";
+          //         toBottom();
+          //         return;
+          //       }
+          //     }
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   });
         }
       }
     }
@@ -731,7 +800,6 @@ const chooseSession = (e, e1) => {
         arr.push(res.data.replyList[i]);
       }
       chatmsg.value = arr;
-
       toBottom();
     } else {
       msgLoading.value = false;
@@ -798,6 +866,34 @@ const outclickInput = () => {
 
 // 页面渲染后
 onMounted(() => {
+  // 用户登录
+  login({
+    userName: ruleForm.name,
+    password: ruleForm.pass,
+  }).then((res) => {
+    if (res.code != -1) {
+      loading.value = false;
+      localStorage.setItem("userToken", res.data.token);
+      if (!token) {
+        getSessionIdsFun();
+      }
+
+      islogin.value = true;
+      RemainingTimes.value = res.data.experienceTimes;
+      // vip用户
+      console.log("身份", res.data.identity);
+      if (res.data.identity == 2) {
+        isvip.value = true;
+        localStorage.setItem("isvip", 2);
+      }
+      Cancel();
+    } else {
+      loading.value = false;
+      // 提示 登录失败
+      dialogCustomize({ content: res.msg });
+    }
+  });
+
   const token = localStorage.getItem("userToken");
   const localisvip = localStorage.getItem("isvip");
   if (localisvip == 2) {
