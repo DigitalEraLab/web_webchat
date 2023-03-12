@@ -1,5 +1,8 @@
 import axios from "axios";
-var baseURL = "http://173.249.201.55:8080";
+// 服务器
+var baseURL = "";
+// 本地
+// var baseURL = "http://192.168.31.44:8080";
 
 export default class HttpRequest {
   constructor(baseUrl = baseURL) {
@@ -9,6 +12,7 @@ export default class HttpRequest {
   getInsideConfig() {
     const token = localStorage.getItem("userToken");
     const config = {
+      timeout: 60 * 60 * 1000,
       baseURL: this.baseUrl,
       headers: { "access-token": token },
     };

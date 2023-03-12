@@ -12,7 +12,7 @@
         :model="ruleForm"
         status-icon
         :rules="rules"
-        label-width="120px"
+        label-width="7.5rem"
         class="demo-ruleForm"
         v-loading="loading"
         :label-position="labelPosition"
@@ -143,7 +143,7 @@
                 <div class="content">
                   <textarea
                     v-model="textarea2"
-                    placeholder="请输入要修改的文案"
+                    placeholder="请输入您的问题"
                     class="content_msg"
                   ></textarea>
                 </div>
@@ -175,10 +175,10 @@
           <div class="vipinfo" v-if="isvip" style="color: white">
             会员:2023.1.1-2099.1.1
             <div class="topUp">
-              <div class="renewal" v-if="isvip">续费套餐</div>
+              <!-- <div class="renewal" v-if="isvip">续费套餐</div> -->
             </div>
-            <div class="logout" @click="logout">退出</div>
           </div>
+          <div class="logout" @click="logout">退出</div>
 
           <div class="open" v-if="!isvip" style="color: white">开通vip</div>
         </div>
@@ -188,7 +188,7 @@
             <div class="prompt">
               <div class="announcement">用户公告</div>
               <div class="an1">体验ChatGPT Plus</div>
-              <div class="an2">未登录用户仅有5次查询机会!</div>
+              <!-- <div class="an2">未登录用户仅有5次查询机会!</div> -->
               <div class="line"></div>
               <div class="an3">
                 ChatGPT Plus 与ChatGPT最大的区别在于让用户在多人使用 ChatGPT
@@ -196,7 +196,10 @@
               </div>
 
               <div>
-                剩余体验次数 <span>{{ RemainingTimes }}</span>
+                <!-- 剩余体验次数 <span>{{ RemainingTimes }}</span> -->
+                <span @click="toAssistant" class="toAssistant"
+                  >前往文案提炼助手 ></span
+                >
               </div>
             </div>
             <div class="bottom">
@@ -217,24 +220,24 @@
                 <div
                   class="lists_item"
                   :class="
-                    chooseSessionS == i.sessionId ? 'lists_item_active' : ''
+                    chooseSessionS == i.sessionID ? 'lists_item_active' : ''
                   "
                   v-for="(i, index) in snum"
                   :key="i"
-                  @click="chooseSession(i.sessionId, index)"
+                  @click="chooseSession(i.sessionID, index)"
                 >
                   {{ i.title }}
                   <div
                     class="editor"
-                    v-if="chooseSessionS == i.sessionId"
-                    @click="editor(i)"
+                    v-if="chooseSessionS == i.sessionID"
+                    @click="editor(i.sessionID)"
                   >
                     <img src="./image/editor.png" alt="" />
                   </div>
                   <div
                     class="del"
-                    v-if="chooseSessionS == i.sessionId"
-                    @click="del(i.sessionId)"
+                    v-if="chooseSessionS == i.sessionID"
+                    @click="del(i.sessionID)"
                   >
                     <img src="./image/del.png" alt="" />
                   </div>
@@ -271,7 +274,6 @@ import {
 } from "@/api/Allrequest";
 import FormInstance from "element-plus";
 import FormRules from "element-plus";
-
 // 表单数据
 const ruleForm = reactive({
   pass: "",
@@ -308,6 +310,10 @@ const msgLoading = ref(false);
 const islogin = ref(false);
 // 聊天内容
 const chatmsg = ref([]);
+// 聊天内容全部--新格式
+
+const newchatMsg = ref([]);
+
 // 是否是vip
 const isvip = ref(false);
 // 登录注册的弹出框
@@ -340,6 +346,12 @@ const isHoverUser = ref(false);
 
 // 获取信息dom
 const scrollbarRef = ref();
+
+// 前往文案助手
+
+const toAssistant = () => {
+  window.open("http://test.totrygpt.com", "_blank");
+};
 
 //   定位到底部
 const toBottom = () => {
@@ -383,16 +395,16 @@ const editor = (e) => {
 const dialogSubmit = (e) => {
   // 删除会话
   if (e.button == "删除") {
-    delSession({ sessionId: chooseSessionS.value }).then((res) => {
+    delSession({ session_id: chooseSessionS.value }).then((res) => {
       chatmsg.value = null;
       dialogCustomize({ content: "删除成功" });
       snum.splice(chooseSessionB.value, 1);
     });
   }
-  // 编辑会话标题
+  // 修改会话标题
   if (e.button == "修改" && iseditorTitle) {
     editorTitle({
-      sessionId: chooseSessionS.value,
+      session_id: chooseSessionS.value,
       title: newSessionTitle.value,
     }).then((res) => {
       iseditorTitle.value = false;
@@ -468,10 +480,10 @@ const submitForm = (formEl) => {
       if (isToLogin_1.value == "登录") {
         loading.value = true;
         login({
-          userName: ruleForm.name,
+          username: ruleForm.name,
           password: ruleForm.pass,
         }).then((res) => {
-          if (res.code != -1) {
+          if (res.code != 403) {
             loading.value = false;
             localStorage.setItem("userToken", res.data.token);
             getSessionIdsFun();
@@ -493,22 +505,29 @@ const submitForm = (formEl) => {
       } else {
         // 用户注册
         register({
-          userName: ruleForm.name,
+          username: ruleForm.name,
           password: ruleForm.pass,
-          repeatPassword: ruleForm.checkPass,
+          repassword: ruleForm.checkPass,
         }).then((res) => {
           // 注册成功之后进行登录
-          if (res) {
+          if (res.code == 200) {
+            loading.value = true;
             login({
-              userName: ruleForm.name,
+              username: ruleForm.name,
               password: ruleForm.pass,
             }).then((res) => {
-              if (res.code != -1) {
+              if (res.code != 403) {
                 loading.value = false;
                 localStorage.setItem("userToken", res.data.token);
                 getSessionIdsFun();
                 islogin.value = true;
                 RemainingTimes.value = res.data.experienceTimes;
+                // vip用户
+                console.log("身份", res.data.identity);
+                if (res.data.identity == 2) {
+                  isvip.value = true;
+                  localStorage.setItem("isvip", 2);
+                }
                 Cancel();
               } else {
                 loading.value = false;
@@ -516,6 +535,10 @@ const submitForm = (formEl) => {
                 dialogCustomize({ content: res.msg });
               }
             });
+          } else {
+            loading.value = false;
+            // 提示
+            dialogCustomize({ content: res.msg });
           }
         });
       }
@@ -548,10 +571,13 @@ const logout = () => {
 
 // 获取会话列表
 const getSessionIdsFun = () => {
-  console.log("snum", snum.value);
-  getSessionIds().then((res) => {
-    for (let i = 0; i < res.data.length; i++) {
-      snum.push(res.data[i]);
+  // console.log("snum", snum.value);
+  getSessionIds({
+    index: 0, //获取从第0条开始的5条sessionID的数据
+    size: 5,
+  }).then((res) => {
+    for (let i = 0; i < res.data.sessionList.length; i++) {
+      snum.push(res.data.sessionList[i]);
     }
     loading.value = false;
   });
@@ -586,8 +612,8 @@ const clearInputHeight = async () => {
   await nextTick();
   const divOverlay = document.getElementById("app-warpper");
   const dargDom = document.getElementById("drag");
-  divOverlay.style.top = "0px";
-  divOverlay.style.height = "60px";
+  divOverlay.style.top = "0rem";
+  divOverlay.style.height = "3.75rem";
 };
 
 // 发送消息
@@ -600,52 +626,56 @@ const sendmsg = () => {
   } else {
     if (!token) {
       // 游客
-      chatmsg.value.push(textarea2.value);
-      chatmsg.value.push("");
-      isLoading.value = true;
-      toBottom();
-      chat({
-        message: textarea2.value,
-        sessionId: sessionid.value,
-      })
-        .then((res) => {
-          // 发送失败，再次发送
-          console.log("消息", res);
-          if (res.code == 500) {
-            chatmsg.value.splice(
-              chatmsg.value.length - 1,
-              1,
-              "发送失败,请重试"
-            );
-            isLoading.value = false;
-            clearInputHeight();
-            toBottom();
-            return;
-          } else {
-            if (res.code == -1) {
-              chatmsg.value.splice(chatmsg.value.length - 1, 1);
-              chatmsg.value.splice(chatmsg.value.length - 1, 1);
+      // chatmsg.value.push(textarea2.value);
+      // chatmsg.value.push("");
+      // isLoading.value = true;
+      // toBottom();
+      // chat({
+      //   message: textarea2.value,
+      //   sessionId: sessionid.value,
+      // })
+      //   .then((res) => {
+      //     // 发送失败，再次发送
+      //     console.log("消息", res);
+      //     if (res.code == 500) {
+      //       chatmsg.value.splice(
+      //         chatmsg.value.length - 1,
+      //         1,
+      //         "发送失败,请重试"
+      //       );
+      //       isLoading.value = false;
+      //       clearInputHeight();
+      //       toBottom();
+      //       return;
+      //     } else {
+      //       if (res.code == -1) {
+      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
+      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
 
-              textarea2.value = "";
-              dialogCustomize({ title: "提示", content: "体验次数完毕" });
-              isLoading.value = false;
-              clearInputHeight();
-              return;
-            } else {
-              RemainingTimes.value = res.data.experienceTimes;
-              chatmsg.value.splice(chatmsg.value.length - 1, 1);
-              chatmsg.value.push(res.data.reply);
-              textarea2.value = "";
-              isLoading.value = false;
-              clearInputHeight();
-              toBottom();
-              return;
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      //         textarea2.value = "";
+      //         dialogCustomize({ title: "提示", content: "体验次数完毕" });
+      //         isLoading.value = false;
+      //         clearInputHeight();
+      //         return;
+      //       } else {
+      //         RemainingTimes.value = res.data.times + 1;
+      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
+      //         chatmsg.value.push(res.data.reply);
+      //         textarea2.value = "";
+      //         isLoading.value = false;
+      //         clearInputHeight();
+      //         toBottom();
+      //         return;
+      //       }
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+
+      dialogCustomize({ content: "请先登录" });
+      textarea2.value = "";
+      return;
     } else {
       if (snum == 0) {
         dialogCustomize({ content: "请先创建会话列表" });
@@ -665,11 +695,15 @@ const sendmsg = () => {
           chatmsg.value.push(textarea2.value);
           chatmsg.value.push("");
           isLoading.value = true;
+          newchatMsg.value.push({
+            role: "user", //用户发送的问题都固定为user
+            content: textarea2.value,
+          });
           clearInputHeight();
           toBottom();
           chat({
-            message: textarea2.value,
-            sessionId: chooseSessionS.value,
+            messages: newchatMsg.value,
+            session_id: chooseSessionS.value,
           })
             .then((res) => {
               // 发送失败，再次发送
@@ -695,7 +729,11 @@ const sendmsg = () => {
                 } else {
                   RemainingTimes.value = res.data.times;
                   chatmsg.value.splice(chatmsg.value.length - 1, 1);
-                  chatmsg.value.push(res.data.reply);
+                  chatmsg.value.push(res.data.message);
+                  newchatMsg.value.push({
+                    role: "assistant", //用户发送的问题都固定为user
+                    content: res.data.message,
+                  });
                   isLoading.value = false;
                   textarea2.value = "";
                   toBottom();
@@ -713,29 +751,38 @@ const sendmsg = () => {
 };
 // 获取聊天记录
 const chooseSession = (e, e1) => {
+  console.log("当前选择会话", e);
   chatmsg.value = [];
   chooseSessionS.value = e;
   chooseSessionB.value = e1;
   msgLoading.value = true;
-
   getmsg({
-    sessionId: e,
+    session_id: e,
   }).then((res) => {
-    if (res.data != null) {
-      const length = res.data.requestList.length;
-      msgLoading.value = false;
-      const arr = reactive([]);
-      for (let i = 0; i < length; i++) {
-        res.data.requestList[i];
-        arr.push(res.data.requestList[i]);
-        arr.push(res.data.replyList[i]);
-      }
-      chatmsg.value = arr;
+    console.log("测试", res);
+    if (res.code == 200) {
+      if (res.data.message.length != 0) {
+        // 返回的会话列表
+        // console.log("返回的会话列表", res.data.message);
+        const length = res.data.message.length;
+        msgLoading.value = false;
+        const arr = reactive([]);
+        for (let i = 0; i < length; i++) {
+          arr.push(res.data.message[i].content);
+          // res.data.requestList[i];
+          // arr.push(res.data.requestList[i]);
+          // arr.push(res.data.replyList[i]);
+        }
+        // 渲染的列表
+        chatmsg.value = arr;
+        // 总的消息列表
+        newchatMsg.value = res.data.message;
 
-      toBottom();
-    } else {
-      msgLoading.value = false;
-      return;
+        toBottom();
+      } else {
+        msgLoading.value = false;
+        return;
+      }
     }
   });
 };
@@ -758,11 +805,13 @@ const addsession = () => {
       dialogCustomize({ content: "目前VIP用户仅提供5次会话记录" });
       return;
     } else {
-      const sessionId = new Date().getTime();
+      const sessionId = new Date().getTime().toString();
       // 创建会话
-      createsession({ sessionId: sessionId, title: "new Chat" }).then((res) => {
-        if (res.code != -1) {
-          snum.unshift({ sessionId: res.data, title: "new chat" });
+      createsession({ session_id: sessionId }).then((res) => {
+        if (res.code == 200) {
+          console.log("12312312", sessionId);
+          snum.unshift({ sessionID: sessionId, title: "New Chat" });
+          console.log("测的是", snum);
         }
       });
       return;
@@ -773,11 +822,11 @@ const addsession = () => {
       dialogCustomize({ content: "目前非VIP用户仅提供1次会话记录" });
       return;
     } else {
-      const sessionId = new Date().getTime();
+      const sessionId = new Date().getTime().toString;
       // 创建会话
       createsession({ sessionId: sessionId, title: "new Chat" }).then((res) => {
         if (res.code != -1) {
-          snum.unshift({ sessionId: res.data, title: "new chat" });
+          snum.unshift({ sessionId: sessionId, title: "new chat" });
         }
       });
       return;
@@ -804,9 +853,9 @@ onMounted(() => {
     isvip.value = true;
   }
   // 获取剩余次数
-  ResiduaVisitorExperience().then((res) => {
-    RemainingTimes.value = res.data;
-  });
+  // ResiduaVisitorExperience().then((res) => {
+  //   RemainingTimes.value = res.data.usageCount;
+  // });
 
   if (token) {
     islogin.value = true;
@@ -901,7 +950,7 @@ onMounted(() => {
   height: 100vh;
   box-sizing: border-box;
   display: flex;
-  padding-bottom: 80px;
+  padding-bottom: 5rem;
   background-color: #000;
   .Content {
     flex: 8;
@@ -913,37 +962,37 @@ onMounted(() => {
     .Header {
       width: 100%;
       display: flex;
-      height: 100px;
+      height: 6.25rem;
       align-items: center;
       justify-content: space-between;
       background-color: #202123;
       overflow: hidden;
 
       div {
-        font-size: 32px;
+        font-size: 2rem;
         color: white;
       }
     }
     .Main {
-      border: 2px solid white;
+      border: 0.125rem solid white;
       display: flex;
       flex-direction: column;
       height: 100%;
       box-sizing: border-box;
-      border-radius: 10px 0 0 10px;
+      border-radius: 0.625rem 0 0 0.625rem;
       box-sizing: border-box;
       overflow: hidden;
-      margin-left: 20px;
+      margin-left: 1.25rem;
       .el-scrollbar {
         width: 100%;
         .scrollbar-demo-item {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          font-size: 20px;
-          margin: 10px;
-          padding: 20px 10px;
-          border-radius: 4px;
+          font-size: 1.25rem;
+          margin: 0.625rem;
+          padding: 1.25rem 0.625rem;
+          border-radius: 0.25rem;
           background: #7e72f2;
           background: linear-gradient(
             to right,
@@ -952,20 +1001,20 @@ onMounted(() => {
           );
           color: white;
           img {
-            width: 50px;
+            width: 3.125rem;
           }
           .image {
-            margin: 0 15px;
+            margin: 0 0.9375rem;
             .user {
               border-radius: 50%;
-              height: 50px;
+              height: 3.125rem;
             }
           }
           .loading,
           .loading > div {
             position: relative;
-            top: 10px;
-            left: -15px;
+            top: 0.625rem;
+            left: -0.9375rem;
             box-sizing: border-box;
           }
 
@@ -973,7 +1022,7 @@ onMounted(() => {
             display: block;
             font-size: 0;
             color: white;
-            margin-left: 1.25rem;
+            margin-left: 20px;
           }
 
           .loading.la-dark {
@@ -988,18 +1037,18 @@ onMounted(() => {
           }
 
           .loading {
-            width: 7.5rem;
-            height: 0.625rem;
+            width: 120px;
+            height: 10px;
             font-size: 0;
             text-align: center;
-            margin-left: 3.125rem;
-            margin-top: -1.875rem;
+            margin-left: 50px;
+            margin-top: -30px;
           }
 
           .loading > div {
             display: inline-block;
-            width: 0.625rem;
-            height: 0.625rem;
+            width: 10px;
+            height: 10px;
             white-space: nowrap;
             border-radius: 100%;
             animation: ball-elastic-dots-anim 1s infinite;
@@ -1029,15 +1078,15 @@ onMounted(() => {
         justify-content: space-between;
         align-items: center;
         position: relative;
-        border-radius: 10px;
+        border-radius: 0.625rem;
         padding: 0;
         bottom: 0;
         left: 0;
-        height: 60px;
+        height: 3.75rem;
         #warpper {
           width: 100%;
           flex: 8;
-          max-height: 150px;
+          max-height: 9.375rem;
 
           #app-warpper {
             position: absolute;
@@ -1052,11 +1101,11 @@ onMounted(() => {
             #drag {
               // 这里可能还有bug
               width: 100%;
-              height: 50px;
+              height: 3.125rem;
               position: absolute;
               z-index: 10;
               cursor: ns-resize;
-              margin-top: -35px;
+              margin-top: -2.1875rem;
             }
             .content {
               width: 100%;
@@ -1068,21 +1117,21 @@ onMounted(() => {
               resize: none;
               outline: none;
               border: none;
-              font-size: 18px;
-              padding: 10px;
-              border-radius: 5px 5px 0 0;
+              font-size: 1.125rem;
+              padding: 0.625rem;
+              border-radius: 0.3125rem 0.3125rem 0 0;
             }
           }
 
           .SendLogo {
             background-color: #7e72f2;
             color: white;
-            border-radius: 20px;
-            height: 30px;
-            width: 80px;
+            border-radius: 1.25rem;
+            height: 1.875rem;
+            width: 5rem;
             position: absolute;
-            right: 20px;
-            bottom: 15px;
+            right: 1.25rem;
+            bottom: 0.9375rem;
           }
         }
 
@@ -1090,25 +1139,25 @@ onMounted(() => {
           flex: 6;
         }
         .input_msg {
-          border-radius: 5px;
-          font-size: 18px;
+          border-radius: 0.3125rem;
+          font-size: 1.125rem;
           position: relative;
         }
         .input_msg textarea {
-          font-size: 12px;
+          font-size: 0.75rem;
         }
 
         .input_msg_active {
           position: relative;
         }
         .input_msg ::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
+          width: 0.375rem;
+          height: 0.375rem;
         }
         .input_msg ::-webkit-scrollbar-thumb {
-          border-radius: 3px;
-          -moz-border-radius: 3px;
-          -webkit-border-radius: 3px;
+          border-radius: 0.1875rem;
+          -moz-border-radius: 0.1875rem;
+          -webkit-border-radius: 0.1875rem;
           background-color: #c3c3c3;
         }
         .input_msg ::-webkit-scrollbar-track {
@@ -1124,58 +1173,57 @@ onMounted(() => {
     height: 100%;
     background-color: #40414f;
     overflow: hidden;
-    width: 244px;
+    width: 15.25rem;
     .title {
       background-color: #202123;
       box-sizing: border-box;
       width: 100%;
-      min-height: 100px;
+      min-height: 6.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-right: 20px;
+      padding-right: 1.25rem;
       overflow: hidden;
       .HeadPicture {
         display: flex;
         align-items: center;
         cursor: pointer;
         .user {
-          width: 50px;
-          height: 50px;
+          width: 3.125rem;
+          height: 3.125rem;
           border-radius: 50%;
         }
         .Vip {
           display: flex;
           .vip {
-            width: 20px;
-            height: 20px;
+            width: 1.25rem;
+            height: 1.25rem;
           }
         }
       }
       .vipinfo {
-        font-size: 12px;
+        font-size: 0.75rem;
         height: 100%;
-        width: 100%;
         display: flex;
         justify-content: center;
         flex-direction: column;
         align-items: flex-start;
-        margin-left: 15px;
+        margin-left: 0.9375rem;
         .topUp {
           display: flex;
           div {
             cursor: pointer;
           }
         }
-        .logout {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
-          color: white;
-          margin-right: 10px;
-          margin-top: 10px;
-        }
+      }
+      .logout {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        color: white;
+        min-width: 2.5rem;
+        font-size: 1rem;
       }
     }
     .chatlist {
@@ -1191,9 +1239,9 @@ onMounted(() => {
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
-        border-radius: 0 10px 10px 0;
-        border: 2px solid white;
-        margin-right: 20px;
+        border-radius: 0 0.625rem 0.625rem 0;
+        border: 0.125rem solid white;
+        margin-right: 1.25rem;
         .prompt {
           color: white;
           display: flex;
@@ -1203,24 +1251,28 @@ onMounted(() => {
           overflow: hidden;
           .line {
             width: 100%;
-            height: 2px;
+            height: 0.125rem;
             background-color: white;
           }
           div {
-            margin: 15px;
+            margin: 0.9375rem;
           }
           .announcement {
-            font-size: 42px;
-            margin-top: 50px;
+            font-size: 2.625rem;
+            margin-top: 3.125rem;
           }
           .an1 {
-            font-size: 20px;
+            font-size: 1.25rem;
           }
           .an2 {
-            font-size: 14px;
+            font-size: 0.875rem;
           }
           .an3 {
-            font-size: 16px;
+            font-size: 1rem;
+          }
+          .toAssistant {
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
           }
         }
         .bottom {
@@ -1232,10 +1284,10 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         align-items: center;
-        border-radius: 0 10px 10px 0;
-        border: 2px solid white;
+        border-radius: 0 0.625rem 0.625rem 0;
+        border: 0.125rem solid white;
         border-left: none;
-        margin-right: 20px;
+        margin-right: 1.25rem;
         .lists {
           width: 100%;
           display: flex;
@@ -1243,15 +1295,15 @@ onMounted(() => {
           justify-content: center;
           box-sizing: border-box;
           flex-direction: column;
-          margin-top: 10px;
+          margin-top: 0.625rem;
           .lists_item {
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 5px;
+            border-radius: 0.3125rem;
             width: 100%;
-            min-width: 200px;
-            padding: 20px;
+            min-width: 12.5rem;
+            padding: 1.25rem;
             // background-color: #79bbff;
             background: linear-gradient(
               to right,
@@ -1260,34 +1312,34 @@ onMounted(() => {
             );
             cursor: pointer;
             overflow: hidden;
-            max-width: 200px;
+            max-width: 12.5rem;
             color: white;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 0.625rem;
             .fill_content {
               display: flex;
               flex-direction: column;
               overflow: hidden;
             }
             .editor {
-              margin: 0 10px;
+              margin: 0 0.625rem;
               img {
-                width: 20px;
-                height: 20px;
+                width: 1.25rem;
+                height: 1.25rem;
               }
             }
             .del {
               img {
-                width: 20px;
-                height: 20px;
+                width: 1.25rem;
+                height: 1.25rem;
               }
             }
           }
           .lists_item_bottom {
             color: white;
-            margin-top: 10px;
-            padding: 0 10px;
-            font-size: 16px;
+            margin-top: 0.625rem;
+            padding: 0 0.625rem;
+            font-size: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1301,7 +1353,7 @@ onMounted(() => {
           }
           .lists_item_active {
             background: rgb(139, 95, 226);
-            // border: 1px solid #ccc;
+            // border: .0625rem solid #ccc;
           }
         }
       }
@@ -1317,8 +1369,8 @@ onMounted(() => {
           button {
             background-color: #7e72f2;
             color: white;
-            border-radius: 20px;
-            padding: 10px 30px;
+            border-radius: 1.25rem;
+            padding: 0.625rem 1.875rem;
             cursor: pointer;
             border: none;
           }

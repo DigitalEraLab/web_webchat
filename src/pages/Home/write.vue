@@ -32,7 +32,7 @@
     </div>
     <div class="content">
       <div class="c1">
-        <div class="c1_title">秒速完善你的写作</div>
+        <div class="c1_title">秒速优化你的写作</div>
         <div class="c1_title1">清晰、准确、从容地书写</div>
       </div>
       <div class="c2">
@@ -64,7 +64,7 @@
             v-model="chooseStyle"
             type="text"
             class="c2_input"
-            placeholder="或者输入你自定义的风格"
+            placeholder="或者输入您自定义的风格"
           />
           <img
             src="./image/change.png"
@@ -94,7 +94,38 @@
               rows="32"
               placeholder="输入或粘贴文本以查看修改后的文案。"
               v-model="textarea1"
+              v-show="fileNum == 0"
             ></textarea>
+            <div class="NumberOfWords">
+              <span>{{ textarea1.length }}</span> 字
+            </div>
+
+            <el-upload
+              ref="uploadRef"
+              class="upload-demo"
+              drag
+              action=""
+              :http-request="upload"
+              multiple
+              v-if="textarea1.length == 0"
+              :auto-upload="false"
+              :limit="1"
+              :on-exceed="OutOfLimit"
+              :on-change="FileUp"
+              :multiple="false"
+              :on-remove="removeFile"
+              :on-success="fileUploadSuccess"
+            >
+              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+              <div class="el-upload__text">
+                拖入文本或者<em>点击这里上传文本</em>(一次只能上传一个文件)
+              </div>
+              <template #tip>
+                <div class="el-upload__tip">
+                  <!-- jpg/png files with a size less than 500kb -->
+                </div>
+              </template>
+            </el-upload>
           </div>
 
           <div class="c2_content_textarea">
@@ -130,7 +161,7 @@
       <div class="bottom_center">
         <div class="b1"><img src="./image/bottom.svg" alt="" /></div>
         <div class="b2">
-          <div class="b2_title">一键完善你的写作</div>
+          <div class="b2_title">一键优化你的写作</div>
           <div class="b2_content">
             <div>
               <img src="./image/right.png" alt="" /><span
@@ -160,7 +191,47 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
+import { UploadFilled } from "@element-plus/icons-vue";
+import UploadInstance from "element-plus";
+import { login, uploadFile } from "@/api/Allrequest";
+// 页面渲染
+onMounted(() => {
+  loginfun();
+});
+// 登录
+const loginfun = () => {
+  login({
+    username: "aaaa1111",
+    password: "aaaa1111",
+  }).then((res) => {
+    console.log("登录", res);
+  });
+};
+
+const uploadRef = ref(UploadInstance);
+// 超出文件限制
+const OutOfLimit = (e) => {
+  dialogCustomize({ content: "一次只能上传一个文件" });
+  return;
+};
+// 文件个数
+const fileNum = ref(0);
+// 文件上传次数检测
+const FileUp = (e) => {
+  console.log(e);
+  fileNum.value++;
+  console.log(fileNum.value);
+};
+// 移出文件
+const removeFile = (e) => {
+  fileNum.value--;
+  console.log(fileNum.value);
+};
+
+// 是否输入了文字
+const isInputText = ref(false);
+
 // 输入框  风格
 const chooseStyle = ref("");
 // 弹出框提示
@@ -209,24 +280,29 @@ const loading = ref(false);
 const chooseStyleFun = (e) => {
   chooseStyle.value = e;
 };
+const fileUploadSuccess = (res) => {
+  console.log("文件上传成功", res);
+};
 const toModify = () => {
-  // 检测内容是否为空
-  if (textarea1.value == "") {
-    dialogCustomize({ content: "文案不能为空" });
+  // 检测内容是否为空 或者文件为空
+  if (textarea1.value == "" && fileNum.value == 0) {
+    dialogCustomize({ content: "文案不能为空,请输入文案或者上传文案" });
     return;
   } else if (chooseStyle.value == "") {
     dialogCustomize({ content: "请选择风格" });
     return;
   } else {
     loading.value = true;
-    // 模拟数据
-    setTimeout(() => {
-      // 清空原本的数据
-      textarea2.value = "";
-      loading.value = false;
-      // 获取到数据，将数据放入
-      textarea2.value = "修改的文案";
-    }, 2000);
+    uploadRef.value.submit();
+    fileUploadSuccess();
+    // // 模拟数据
+    // setTimeout(() => {
+    //   // 清空原本的数据
+    //   textarea2.value = "";
+    //   loading.value = false;
+    //   // 获取到数据，将数据放入
+    //   textarea2.value = "修改的文案";
+    // }, 2000);
   }
 };
 </script>
@@ -251,6 +327,20 @@ const toModify = () => {
   align-items: center;
   justify-content: center;
 }
+
+// 弹出框样式
+:deep(.el-button) {
+  background-color: #006494;
+  color: white;
+  border: none;
+}
+
+// 拖拽框样式
+:deep(.el-upload-dragger) {
+  border: none !important;
+  margin: 0 5px;
+}
+
 .write {
   width: 100%;
   display: flex;
@@ -265,7 +355,7 @@ const toModify = () => {
     justify-content: space-between;
     box-sizing: border-box;
     max-width: 87.5rem;
-    padding: 0 0.625rem;
+    padding: 0.3125rem 0.625rem;
     .logo {
       display: flex;
       .logo_fix {
@@ -310,8 +400,8 @@ const toModify = () => {
         margin: 0.625rem;
       }
       img {
-        width: 2.1875rem;
-        height: 2.1875rem;
+        width: 2.25rem;
+        height: 2rem;
       }
     }
   }
@@ -319,7 +409,7 @@ const toModify = () => {
     padding: 0 4.375rem 2.5rem 4.375rem;
     box-sizing: border-box;
     width: 100%;
-    flex: 1;
+    // flex: 1;
     background-color: #f7f7f7;
     display: flex;
     flex-direction: column;
@@ -345,7 +435,6 @@ const toModify = () => {
       border-radius: 0.625rem;
       box-shadow: #ccc 0rem 0rem 0.3125rem;
       background-color: #ffffff;
-      //   background-color: red;
       display: flex;
       flex-direction: column;
       max-width: 87.5rem;
@@ -380,7 +469,7 @@ const toModify = () => {
           min-width: 6.25rem;
         }
         .c2_input:focus {
-          border: 1px solid #006494;
+          border: 0.0625rem solid #006494;
         }
         .el-input {
           max-width: 15.625rem !important;
@@ -393,15 +482,30 @@ const toModify = () => {
           margin-left: 1.25rem;
           cursor: pointer;
         }
+        .c2_change:hover {
+          animation: rotation 0.5s ease;
+        }
+
+        @keyframes rotation {
+          /*以百分比来规定改变发生的时间 也可以通过"from"和"to",等价于0% 和 100%*/
+          0% {
+            /*rotate(2D旋转) scale(放大或者缩小) translate(移动) skew(翻转)*/
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(180deg);
+          }
+        }
       }
       .c2_content {
         width: 100%;
         display: flex;
         box-sizing: border-box;
-
+        min-height: 31.25rem;
         .c2_content_textarea {
           flex: 1;
-          max-height: 29.375rem;
+          max-height: 31.25rem;
+          position: relative;
           textarea {
             padding: 1.875rem;
             font-size: 1.625rem;
@@ -413,12 +517,32 @@ const toModify = () => {
             width: 100%;
             height: 100%;
           }
+          .upload-demo {
+            width: 100%;
+            border: none;
+            position: absolute;
+            top: 100px;
+            left: 0;
+          }
+
+          .NumberOfWords {
+            font-size: 0.75rem;
+            color: #ccc;
+            position: absolute;
+            right: 0.625rem;
+            bottom: 0.625rem;
+
+            span {
+              color: #006494;
+              font-size: 0.875rem;
+            }
+          }
           textarea:focus {
             border: 0.0625rem solid #006494;
           }
           .loginSvg {
-            margin-top: 20px;
-            margin-left: 20px;
+            margin-top: 1.25rem;
+            margin-left: 1.25rem;
           }
           .t1 {
             border-radius: 0 0 0 0.625rem;
@@ -454,14 +578,14 @@ const toModify = () => {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    overflow: hidden;
-    max-height: 13.5625rem;
+    height: 13.5625rem;
+    flex-wrap: wrap;
     .bottom_center {
       display: flex;
       box-sizing: border-box;
       padding: 1.25rem;
       justify-content: space-around;
-      max-width: 100rem;
+      // max-width: 100rem;
       .b1 {
         img {
           width: 14.0625rem;
@@ -472,8 +596,7 @@ const toModify = () => {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        justify-content: space-evenly;
-        height: 13.5625rem;
+        justify-content: space-around;
         box-sizing: border-box;
         max-width: 51.25rem;
         margin-left: 3.125rem;
@@ -484,7 +607,6 @@ const toModify = () => {
           display: flex;
           flex-wrap: wrap;
           max-width: 56.25rem;
-          height: 3.625rem;
           justify-content: flex-start;
           div {
             font-size: 0.875rem;

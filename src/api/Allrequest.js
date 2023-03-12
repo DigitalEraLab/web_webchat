@@ -1,10 +1,20 @@
 import axios from "./axios_init";
 
+// 文案文本
+export const uploadFile = (data) => {
+  return axios.request({
+    url: "/gpt/Upload",
+    method: "post",
+    data: data,
+  });
+};
+
 // 登录
 export const login = (data) => {
   const token = localStorage.getItem("userToken");
+  console.log(token);
   return axios.request({
-    url: "/user/login",
+    url: "/gpt/Login",
     method: "post",
     data: data,
     headers: {
@@ -15,7 +25,7 @@ export const login = (data) => {
 // 注册
 export const register = (data) => {
   return axios.request({
-    url: "/user/register",
+    url: "/gpt/Register",
     method: "post",
     data: data,
   });
@@ -23,7 +33,7 @@ export const register = (data) => {
 // 游客剩余体验此处接口
 export const ResiduaVisitorExperience = (data) => {
   return axios.request({
-    url: "/user/getNum",
+    url: "/gpt/getUsageCount",
     method: "post",
     data: data,
   });
@@ -34,7 +44,7 @@ export const chat = (data) => {
   console.log("发送参数", data);
   const token = localStorage.getItem("userToken");
   return axios.request({
-    url: "/gpt/sendMessage",
+    url: "/gpt/sendQuest",
     method: "post",
     data: data,
     headers: {
@@ -45,10 +55,9 @@ export const chat = (data) => {
 
 // 获取聊天内容
 export const getmsg = (data) => {
-  console.log("参数", data);
   const token = localStorage.getItem("userToken");
   return axios.request({
-    url: "/user/getMessages",
+    url: "/gpt/getHistoryDialog",
     method: "post",
     data: data,
     headers: {
@@ -59,9 +68,8 @@ export const getmsg = (data) => {
 // 创建会话列表
 export const createsession = (data) => {
   const token = localStorage.getItem("userToken");
-
   return axios.request({
-    url: "/gpt/createSession",
+    url: "/gpt/createSessionID",
     method: "post",
     data: data,
     headers: {
@@ -71,11 +79,10 @@ export const createsession = (data) => {
 };
 
 // 获取会话列表
-
 export const getSessionIds = (data) => {
   const token = localStorage.getItem("userToken");
   return axios.request({
-    url: "/user/getSessionIds",
+    url: "/gpt/getSessionID",
     method: "post",
     data: data,
     headers: {
@@ -88,7 +95,7 @@ export const getSessionIds = (data) => {
 export const delSession = (data) => {
   const token = localStorage.getItem("userToken");
   return axios.request({
-    url: "/gpt/delSession",
+    url: "/gpt/delUserSession",
     method: "post",
     data: data,
     headers: {
@@ -98,10 +105,10 @@ export const delSession = (data) => {
 };
 // 修改会话标题
 export const editorTitle = (data) => {
-  console.log("测试触发接口");
+  console.log("测试触发接口", data);
   const token = localStorage.getItem("userToken");
   return axios.request({
-    url: "/gpt/updateSessionTitle",
+    url: "/gpt/updateTitle",
     method: "post",
     data: data,
     headers: {
