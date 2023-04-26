@@ -1,6 +1,16 @@
 import axios from "./axios_init";
 
 // 文案文本
+export const LongTextDigest = (data) => {
+  console.log("请求参数", data);
+  return axios.request({
+    url: "/gpt/LongTextDigest",
+    method: "post",
+    data: data,
+  });
+};
+
+// 文案文本(文件)
 export const uploadFile = (data) => {
   return axios.request({
     url: "/gpt/Upload",

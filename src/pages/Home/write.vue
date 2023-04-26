@@ -19,24 +19,26 @@
   <div class="write">
     <div class="top">
       <div class="logo">
-        <img src="./image/logo_write.svg" alt="" class="logo_fix" />
+        <!-- <img src="./image/logo_write.svg" alt="" class="logo_fix" /> -->
+        <img src="./image/logo_jysw.jpg" alt="" class="logo_fix" />
         <div class="title">
-          <span class="deepl">DeepL </span> <span>Write</span>
+          <span class="deepl">创新 </span>
+          <span class="future">数字化未来</span>
           <span class="beta">BETA</span>
         </div>
       </div>
       <div class="login">
-        <span>登录</span>
+        <span></span>
         <img src="./image/menu.png" alt="" />
       </div>
     </div>
     <div class="content">
       <div class="c1">
-        <div class="c1_title">秒速优化你的写作</div>
-        <div class="c1_title1">清晰、准确、从容地书写</div>
+        <div class="c1_title">一键将您的写作进行精简优化</div>
+        <div class="c1_title1">智能、完美、从容地精简</div>
       </div>
       <div class="c2">
-        <div class="c2_title">
+        <!-- <div class="c2_title">
           <el-dropdown>
             <span class="el-dropdown-link">
               文案风格
@@ -72,6 +74,19 @@
             class="c2_change"
             @click="toModify"
           />
+        </div> -->
+        <div class="c2_title">
+          <div class="prompt">
+            点击这里进行文本概括
+            <img src="../../pages/Home/image/there.svg" alt="" />
+            <img
+              src="./image/change.png"
+              alt=""
+              class="c2_change"
+              @click="toModify"
+            />
+          </div>
+          <div class="clearAll" @click="clearAll">清空文本</div>
         </div>
         <div class="c2_content">
           <!-- <el-input
@@ -92,9 +107,8 @@
               id=""
               cols="30"
               rows="32"
-              placeholder="输入或粘贴文本以查看修改后的文案。"
+              placeholder="请输入提示词"
               v-model="textarea1"
-              v-show="fileNum == 0"
             ></textarea>
             <div class="NumberOfWords">
               <span>{{ textarea1.length }}</span> 字
@@ -107,7 +121,6 @@
               action=""
               :http-request="upload"
               multiple
-              v-if="textarea1.length == 0"
               :auto-upload="false"
               :limit="1"
               :on-exceed="OutOfLimit"
@@ -144,6 +157,9 @@
               rows="30"
               v-model="textarea2"
             ></textarea>
+            <div class="NumberOfWords">
+              <span>{{ textarea2.length }}</span> 字
+            </div>
           </div>
 
           <!-- <el-input
@@ -161,26 +177,26 @@
       <div class="bottom_center">
         <div class="b1"><img src="./image/bottom.svg" alt="" /></div>
         <div class="b2">
-          <div class="b2_title">一键优化你的写作</div>
+          <div class="b2_title">一键精简您的文案</div>
           <div class="b2_content">
             <div>
               <img src="./image/right.png" alt="" /><span
-                >智能AI帮您开拓思路</span
+                >智能AI帮您文案精简</span
               >
             </div>
             <div>
               <img src="./image/right.png" alt="" /><span
-                >选择你的写作风格</span
+                >一键替您精简文案</span
               >
             </div>
             <div>
               <img src="./image/right.png" alt="" /><span
-                >创造性地改写整个句子</span
+                >提高您的文案编辑效率</span
               >
             </div>
             <div>
               <img src="./image/right.png" alt="" /><span
-                >通过Write建议的改写方式获取准确的措辞</span
+                >完善您的文案编辑功能</span
               >
             </div>
           </div>
@@ -194,20 +210,9 @@
 import { ref, reactive, onMounted } from "vue";
 import { UploadFilled } from "@element-plus/icons-vue";
 import UploadInstance from "element-plus";
-import { login, uploadFile } from "@/api/Allrequest";
+import { login, uploadFile, LongTextDigest } from "@/api/Allrequest";
 // 页面渲染
-onMounted(() => {
-  loginfun();
-});
-// 登录
-const loginfun = () => {
-  login({
-    username: "aaaa1111",
-    password: "aaaa1111",
-  }).then((res) => {
-    console.log("登录", res);
-  });
-};
+onMounted(() => {});
 
 const uploadRef = ref(UploadInstance);
 // 超出文件限制
@@ -219,14 +224,24 @@ const OutOfLimit = (e) => {
 const fileNum = ref(0);
 // 文件上传次数检测
 const FileUp = (e) => {
-  console.log(e);
+  // console.log(e);
   fileNum.value++;
-  console.log(fileNum.value);
+  // console.log(fileNum.value);
 };
 // 移出文件
 const removeFile = (e) => {
   fileNum.value--;
-  console.log(fileNum.value);
+  // console.log(fileNum.value);
+};
+// 清空文本
+
+const clearAll = () => {
+  if (fileNum.value != 0) {
+    uploadRef.value.clearFiles();
+  }
+  textarea1.value = "";
+  textarea2.value = "";
+  fileNum.value = 0;
 };
 
 // 是否输入了文字
@@ -281,29 +296,38 @@ const chooseStyleFun = (e) => {
   chooseStyle.value = e;
 };
 const fileUploadSuccess = (res) => {
-  console.log("文件上传成功", res);
+  // console.log("文件上传成功", res);
 };
 const toModify = () => {
   // 检测内容是否为空 或者文件为空
-  if (textarea1.value == "" && fileNum.value == 0) {
-    dialogCustomize({ content: "文案不能为空,请输入文案或者上传文案" });
+  if (textarea1.value == "") {
+    dialogCustomize({ content: "提示词不能为空!" });
     return;
-  } else if (chooseStyle.value == "") {
-    dialogCustomize({ content: "请选择风格" });
+  } else if (fileNum.value == 0) {
+    dialogCustomize({ content: "文案不能为空" });
     return;
   } else {
     loading.value = true;
     uploadRef.value.submit();
-    fileUploadSuccess();
-    // // 模拟数据
-    // setTimeout(() => {
-    //   // 清空原本的数据
-    //   textarea2.value = "";
-    //   loading.value = false;
-    //   // 获取到数据，将数据放入
-    //   textarea2.value = "修改的文案";
-    // }, 2000);
   }
+};
+const upload = (item) => {
+  let formData = new FormData();
+  formData.append("file", item.file);
+  formData.append("type", "SKU");
+  formData.append("question", textarea1.value);
+  uploadFile(formData)
+    .then((res) => {
+      if (res.data.content != "") {
+        textarea2.value = res.data.content;
+        loading.value = false;
+      }
+    })
+    .catch((err) => {
+      // console.log("报错", err);
+      dialogCustomize({ content: err });
+      return;
+    });
 };
 </script>
 
@@ -338,7 +362,7 @@ const toModify = () => {
 // 拖拽框样式
 :deep(.el-upload-dragger) {
   border: none !important;
-  margin: 0 5px;
+  margin: 0 0.3125rem;
 }
 
 .write {
@@ -360,8 +384,10 @@ const toModify = () => {
       display: flex;
       .logo_fix {
         position: relative;
-        width: 3.25rem;
-        height: 4.125rem;
+        width: 5.625rem;
+        height: 100%;
+        border: 0.0625rem solid #037171;
+        border-radius: 0.3125rem;
       }
       .title {
         display: flex;
@@ -378,6 +404,9 @@ const toModify = () => {
           color: #0f2b46;
           font-weight: 800;
           font-size: 1.125rem;
+        }
+        .future {
+          font-size: 0.875rem;
         }
         .beta {
           width: 2.9375rem;
@@ -443,10 +472,13 @@ const toModify = () => {
         min-height: 3.4375rem;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         border-bottom: 0.0625rem solid #dae1e8;
         box-sizing: border-box;
         padding: 0.5rem 1.25rem;
-
+        .clearAll {
+          cursor: pointer;
+        }
         .el-dropdown-link {
           display: flex;
           align-items: center;
@@ -481,6 +513,16 @@ const toModify = () => {
           height: 1.5rem;
           margin-left: 1.25rem;
           cursor: pointer;
+        }
+        .prompt {
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          img {
+            width: 1.875rem;
+            height: 1.875rem;
+            margin-left: 0.625rem;
+          }
         }
         .c2_change:hover {
           animation: rotation 0.5s ease;
@@ -521,7 +563,7 @@ const toModify = () => {
             width: 100%;
             border: none;
             position: absolute;
-            top: 100px;
+            bottom: 0;
             left: 0;
           }
 
@@ -531,6 +573,7 @@ const toModify = () => {
             position: absolute;
             right: 0.625rem;
             bottom: 0.625rem;
+            z-index: 99;
 
             span {
               color: #006494;

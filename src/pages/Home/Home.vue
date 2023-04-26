@@ -17,7 +17,11 @@
         v-loading="loading"
         :label-position="labelPosition"
       >
-        <el-form-item label="用户名" prop="name" style="width: 90%">
+        <el-form-item
+          label="用户名(请输入真实姓名)"
+          prop="name"
+          style="width: 90%"
+        >
           <el-input v-model.number="ruleForm.name" />
         </el-form-item>
         <el-form-item label="密码" prop="pass" style="width: 90%">
@@ -25,7 +29,7 @@
             v-model="ruleForm.pass"
             type="password"
             autocomplete="off"
-            show-password="true"
+            :show-password="true"
           />
         </el-form-item>
         <el-form-item
@@ -38,7 +42,7 @@
             v-model="ruleForm.checkPass"
             type="password"
             autocomplete="off"
-            show-password="true"
+            :show-password="true"
           />
         </el-form-item>
       </el-form>
@@ -83,6 +87,12 @@
     <el-container>
       <el-container class="Content">
         <el-header class="Header">
+          <div class="slider-demo-block" v-if="showFontcontrol">
+            <span>字体缩放</span>
+
+            <el-slider v-model="fontSize" show-input :max="18" />
+          </div>
+
           <div class="logo">
             <img src="./image/chatLogo.png" alt="" />
           </div>
@@ -90,6 +100,123 @@
           <div class="Occupy space"></div>
         </el-header>
         <div class="Main">
+          <div
+            class="main_animation"
+            v-if="chooseSessionS == 0 || chatmsg.length == 0"
+          >
+            <div class="wrapper">
+              <div class="line line1">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line2">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line3">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line4">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line5">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line6">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line7">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line8">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line9">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line10">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+              <div class="line line11">
+                <span class="circle circle-top"></span>
+                <div class="dotted">
+                  <span class="dot dot-top"></span>
+                  <span class="dot dot-middle-top"></span>
+                  <span class="dot dot-middle-bottom"></span>
+                  <span class="dot dot-bottom"></span>
+                </div>
+                <span class="circle circle-bottom"></span>
+              </div>
+            </div>
+          </div>
           <el-scrollbar
             class="el-scrollbar"
             v-loading="msgLoading"
@@ -100,6 +227,7 @@
               :key="item"
               :class="index % 2 != 0 ? 'request' : ''"
               class="scrollbar-demo-item"
+              :style="{ fontSize: 12 + fontSize + 'px' }"
             >
               <!-- {{ index % 2 != 0 && isLoading ? "...." : "" }} -->
 
@@ -135,7 +263,6 @@
               </div>
             </div>
           </el-scrollbar>
-
           <el-footer class="Footer">
             <div id="warpper">
               <div id="app-warpper">
@@ -173,7 +300,8 @@
             </div>
           </div>
           <div class="vipinfo" v-if="isvip" style="color: white">
-            会员:2023.1.1-2099.1.1
+            <!-- 会员:2023.1.1-2099.1.1 -->
+            {{ showUsername }}
             <div class="topUp">
               <!-- <div class="renewal" v-if="isvip">续费套餐</div> -->
             </div>
@@ -243,13 +371,18 @@
                   </div>
                 </div>
               </div>
-
+              <div>
+                <!-- 剩余体验次数 <span>{{ RemainingTimes }}</span> -->
+                <span @click="toAssistant" class="toAssistant"
+                  >前往文案提炼助手 ></span
+                >
+              </div>
               <div class="lists_item_bottom" v-if="!isvip">
                 您还不是vip,剩余访问次数{{ RemainingTimes }}次数
               </div>
-              <div v-if="isvip" class="lists_item_bottom">
+              <!-- <div v-if="isvip" class="lists_item_bottom">
                 尊贵的vip,欢迎使用智慧聊天系统
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -259,7 +392,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, nextTick } from "vue";
+import {
+  reactive,
+  ref,
+  onMounted,
+  nextTick,
+  onBeforeUnmount,
+  watch,
+} from "vue";
+import { useRouter } from "vue-router";
 import {
   login,
   chat,
@@ -274,6 +415,15 @@ import {
 } from "@/api/Allrequest";
 import FormInstance from "element-plus";
 import FormRules from "element-plus";
+// 路由
+const router = useRouter();
+
+// 监听页面缩放
+const zoom = ref(1);
+
+// 文本字体大小
+const fontSize = ref(0);
+
 // 表单数据
 const ruleForm = reactive({
   pass: "",
@@ -347,10 +497,22 @@ const isHoverUser = ref(false);
 // 获取信息dom
 const scrollbarRef = ref();
 
-// 前往文案助手
+// 显示用户名
 
+const showUsername = ref();
+
+// 字体所方框的显示隐藏
+const showFontcontrol = ref(true);
+
+// 前往文案助手
 const toAssistant = () => {
-  window.open("http://test.totrygpt.com", "_blank");
+  const token = localStorage.getItem("userToken");
+  // console.log(token);
+  if (token != null) {
+    router.push("/write");
+  } else {
+    dialogCustomize({ content: "请先登录" });
+  }
 };
 
 //   定位到底部
@@ -365,17 +527,17 @@ const toBottom = () => {
 
 const shouUserInfo = () => {
   isHoverUser.value = true;
-  console.log(isHoverUser.value);
+  // console.log(isHoverUser.value);
 };
 const hideUserinfo = () => {
   isHoverUser.value = false;
-  console.log(isHoverUser.value);
+  // console.log(isHoverUser.value);
 };
 
 // 清空上一个用户所留下的所有信息
 const clearBoth = () => {
   chooseSessionS.value = 0;
-  chatmsg.value = null;
+  chatmsg.value = [];
   snum.value = null;
   RemainingTimes.value = 0;
 };
@@ -396,9 +558,9 @@ const dialogSubmit = (e) => {
   // 删除会话
   if (e.button == "删除") {
     delSession({ session_id: chooseSessionS.value }).then((res) => {
-      chatmsg.value = null;
-      dialogCustomize({ content: "删除成功" });
+      chatmsg.value = [];
       snum.splice(chooseSessionB.value, 1);
+      dialogCustomize({ content: "删除成功" });
     });
   }
   // 修改会话标题
@@ -425,8 +587,9 @@ const checkName = (rule, value, callback) => {
     return callback(new Error("请输入用户名"));
   }
   setTimeout(() => {
-    if (value.toString().length < 5 || value.toString().length > 10) {
-      callback(new Error("5~10个字符"));
+    let reg = /^[\u4e00-\u9fa5]{1,20}$/;
+    if (!reg.test(value.toString())) {
+      callback(new Error("请输入真实姓名"));
     } else {
       callback();
     }
@@ -442,7 +605,6 @@ const validatePass = (rule, value, callback) => {
     );
     const res2 = res1.exec(value);
     if (res2) {
-      console.log(1);
       callback();
     } else {
       callback(
@@ -450,7 +612,6 @@ const validatePass = (rule, value, callback) => {
           "密码应为字母，数字，特殊符号(~!@#$%^&*()_.)，两种及以上组合，8-16位字符串，如：xiao123456"
         )
       );
-      console.log(2);
     }
   }
 };
@@ -471,37 +632,43 @@ const rules = reactive({
   name: [{ validator: checkName, trigger: "blur" }],
 });
 
-// 注册登录
+// 登录函数
+const loginFun = () => {
+  login({
+    username: ruleForm.name,
+    password: ruleForm.pass,
+  }).then((res) => {
+    if (res.code != 403) {
+      loading.value = false;
+      localStorage.setItem("userToken", res.data.token);
+      showUsername.value = res.data.username;
+      localStorage.setItem("userName", res.data.username);
+      islogin.value = true;
+      RemainingTimes.value = res.data.experienceTimes;
+      // vip用户
+      if (res.data.identity == 2) {
+        isvip.value = true;
+        localStorage.setItem("isvip", 2);
+      }
+
+      Cancel();
+      getSessionIdsFun();
+    } else {
+      loading.value = false;
+      // 提示 登录失败
+      dialogCustomize({ content: res.msg });
+    }
+  });
+};
+
+// 注册登录提交
 const submitForm = (formEl) => {
   if (!formEl) return;
   formEl.validate((valid) => {
     if (valid) {
       // 用户登录
       if (isToLogin_1.value == "登录") {
-        loading.value = true;
-        login({
-          username: ruleForm.name,
-          password: ruleForm.pass,
-        }).then((res) => {
-          if (res.code != 403) {
-            loading.value = false;
-            localStorage.setItem("userToken", res.data.token);
-            getSessionIdsFun();
-            islogin.value = true;
-            RemainingTimes.value = res.data.experienceTimes;
-            // vip用户
-            console.log("身份", res.data.identity);
-            if (res.data.identity == 2) {
-              isvip.value = true;
-              localStorage.setItem("isvip", 2);
-            }
-            Cancel();
-          } else {
-            loading.value = false;
-            // 提示 登录失败
-            dialogCustomize({ content: res.msg });
-          }
-        });
+        loginFun();
       } else {
         // 用户注册
         register({
@@ -512,29 +679,7 @@ const submitForm = (formEl) => {
           // 注册成功之后进行登录
           if (res.code == 200) {
             loading.value = true;
-            login({
-              username: ruleForm.name,
-              password: ruleForm.pass,
-            }).then((res) => {
-              if (res.code != 403) {
-                loading.value = false;
-                localStorage.setItem("userToken", res.data.token);
-                getSessionIdsFun();
-                islogin.value = true;
-                RemainingTimes.value = res.data.experienceTimes;
-                // vip用户
-                console.log("身份", res.data.identity);
-                if (res.data.identity == 2) {
-                  isvip.value = true;
-                  localStorage.setItem("isvip", 2);
-                }
-                Cancel();
-              } else {
-                loading.value = false;
-                // 提示 登录失败
-                dialogCustomize({ content: res.msg });
-              }
-            });
+            loginFun();
           } else {
             loading.value = false;
             // 提示
@@ -574,12 +719,17 @@ const getSessionIdsFun = () => {
   // console.log("snum", snum.value);
   getSessionIds({
     index: 0, //获取从第0条开始的5条sessionID的数据
-    size: 5,
+    size: 100,
   }).then((res) => {
-    for (let i = 0; i < res.data.sessionList.length; i++) {
-      snum.push(res.data.sessionList[i]);
+    if (res.code == 403) {
+      dialogCustomize({ content: "用户信息过期!请重新登录!" });
+      loading.value = false;
+    } else {
+      for (let i = 0; i < res.data.sessionList.length; i++) {
+        snum.push(res.data.sessionList[i]);
+      }
+      loading.value = false;
     }
-    loading.value = false;
   });
 };
 
@@ -625,54 +775,6 @@ const sendmsg = () => {
     return;
   } else {
     if (!token) {
-      // 游客
-      // chatmsg.value.push(textarea2.value);
-      // chatmsg.value.push("");
-      // isLoading.value = true;
-      // toBottom();
-      // chat({
-      //   message: textarea2.value,
-      //   sessionId: sessionid.value,
-      // })
-      //   .then((res) => {
-      //     // 发送失败，再次发送
-      //     console.log("消息", res);
-      //     if (res.code == 500) {
-      //       chatmsg.value.splice(
-      //         chatmsg.value.length - 1,
-      //         1,
-      //         "发送失败,请重试"
-      //       );
-      //       isLoading.value = false;
-      //       clearInputHeight();
-      //       toBottom();
-      //       return;
-      //     } else {
-      //       if (res.code == -1) {
-      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
-      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
-
-      //         textarea2.value = "";
-      //         dialogCustomize({ title: "提示", content: "体验次数完毕" });
-      //         isLoading.value = false;
-      //         clearInputHeight();
-      //         return;
-      //       } else {
-      //         RemainingTimes.value = res.data.times + 1;
-      //         chatmsg.value.splice(chatmsg.value.length - 1, 1);
-      //         chatmsg.value.push(res.data.reply);
-      //         textarea2.value = "";
-      //         isLoading.value = false;
-      //         clearInputHeight();
-      //         toBottom();
-      //         return;
-      //       }
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-
       dialogCustomize({ content: "请先登录" });
       textarea2.value = "";
       return;
@@ -697,8 +799,9 @@ const sendmsg = () => {
           isLoading.value = true;
           newchatMsg.value.push({
             role: "user", //用户发送的问题都固定为user
-            content: textarea2.value,
+            content: textarea2.value.replace(/\n/g, "<br>"),
           });
+
           clearInputHeight();
           toBottom();
           chat({
@@ -707,14 +810,15 @@ const sendmsg = () => {
           })
             .then((res) => {
               // 发送失败，再次发送
-              console.log("消息", res);
+              // console.log("消息", res);
               if (res.code == 500) {
                 chatmsg.value.splice(
                   chatmsg.value.length - 1,
                   1,
-                  "发送失败,请重试"
+                  "当前会话字数已经超过限制,请重新创建一个会话!"
                 );
                 isLoading.value = false;
+                textarea2.value = "";
                 clearInputHeight();
                 toBottom();
                 return;
@@ -732,7 +836,7 @@ const sendmsg = () => {
                   chatmsg.value.push(res.data.message);
                   newchatMsg.value.push({
                     role: "assistant", //用户发送的问题都固定为user
-                    content: res.data.message,
+                    content: res.data.message.replace(/<br>/g, "\n"),
                   });
                   isLoading.value = false;
                   textarea2.value = "";
@@ -751,7 +855,7 @@ const sendmsg = () => {
 };
 // 获取聊天记录
 const chooseSession = (e, e1) => {
-  console.log("当前选择会话", e);
+  // console.log("当前选择会话", e);
   chatmsg.value = [];
   chooseSessionS.value = e;
   chooseSessionB.value = e1;
@@ -759,7 +863,6 @@ const chooseSession = (e, e1) => {
   getmsg({
     session_id: e,
   }).then((res) => {
-    console.log("测试", res);
     if (res.code == 200) {
       if (res.data.message.length != 0) {
         // 返回的会话列表
@@ -768,7 +871,7 @@ const chooseSession = (e, e1) => {
         msgLoading.value = false;
         const arr = reactive([]);
         for (let i = 0; i < length; i++) {
-          arr.push(res.data.message[i].content);
+          arr.push(res.data.message[i].content.replace(/<br>/g, "\n"));
           // res.data.requestList[i];
           // arr.push(res.data.requestList[i]);
           // arr.push(res.data.replyList[i]);
@@ -798,24 +901,17 @@ const dialogFormVisible = (e) => {
 
 // 创建新的会话
 const addsession = () => {
-  console.log("身份", isvip.value);
   if (isvip.value) {
-    if (snum.length == 5) {
-      dialogVisible.value = true;
-      dialogCustomize({ content: "目前VIP用户仅提供5次会话记录" });
-      return;
-    } else {
-      const sessionId = new Date().getTime().toString();
-      // 创建会话
-      createsession({ session_id: sessionId }).then((res) => {
-        if (res.code == 200) {
-          console.log("12312312", sessionId);
-          snum.unshift({ sessionID: sessionId, title: "New Chat" });
-          console.log("测的是", snum);
-        }
-      });
-      return;
-    }
+    // dialogVisible.value = true;
+    // dialogCustomize({ content: "目前VIP用户仅提供5次会话记录" });
+    // return;
+    const sessionId = new Date().getTime().toString();
+    // 创建会话
+    createsession({ session_id: sessionId }).then((res) => {
+      if (res.code == 200) {
+        snum.unshift({ sessionID: sessionId, title: "New Chat" });
+      }
+    });
   } else {
     if (snum.length == 1) {
       dialogVisible.value = true;
@@ -845,10 +941,35 @@ const outclickInput = () => {
   isFocus.value = false;
 };
 
+// 检测token是否过期
+const tokenValue = () => {};
+// 缩放页面宽度检测
+const handleResize = () => {
+  zoom.value = window.innerWidth / 1920; // 假设设计稿宽度为 1920px，计算缩放比例
+};
+// 监听页面缩放情况
+watch(zoom, (val) => {
+  if (val < 0.5) {
+    showFontcontrol.value = false; // 缩放比例小于 0.8 时隐藏 elem3
+  } else {
+    showFontcontrol.value = true; // 缩放比例大于等于 0.8 时显示 elem3
+  }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleResize); // 移除监听
+});
+
 // 页面渲染后
 onMounted(() => {
+  window.addEventListener("resize", handleResize); // 监听窗口大小变化事件
+
   const token = localStorage.getItem("userToken");
+  const username = localStorage.getItem("userName");
   const localisvip = localStorage.getItem("isvip");
+  if (username) {
+    showUsername.value = username;
+  }
   if (localisvip == 2) {
     isvip.value = true;
   }
@@ -945,6 +1066,46 @@ onMounted(() => {
   justify-content: center;
 }
 
+::v-deep {
+  .el-button--primary {
+    background-color: #7e72f2;
+    border: none;
+  }
+
+  .el-button--primary:hover {
+    background: linear-gradient(
+      to right,
+      rgba(126, 114, 242, 1),
+      rgb(207, 205, 221)
+    );
+  }
+}
+::v-deep {
+  .el-input__wrapper {
+    box-shadow: #2544e7;
+  }
+}
+::v-deep {
+  .el-input-number__decrease {
+    background-color: white;
+    border: none;
+  }
+  .el-slider__input {
+    width: 105px;
+    padding: 0;
+  }
+  .el-input-number__increase {
+    border: none;
+    background-color: white;
+  }
+  .el-tooltip__trigger {
+    border: 1px solid rgba(126, 114, 242, 1);
+  }
+  .el-slider__bar {
+    background: rgba(126, 114, 242, 1);
+  }
+}
+
 .common-layout {
   width: 100%;
   height: 100vh;
@@ -965,13 +1126,35 @@ onMounted(() => {
       height: 6.25rem;
       align-items: center;
       justify-content: space-between;
+      flex-direction: row-reverse;
       background-color: #202123;
-      overflow: hidden;
-
-      div {
-        font-size: 2rem;
-        color: white;
+      position: relative;
+      .logo {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        position: absolute;
+        left: 1.25rem;
       }
+      .slider-demo-block {
+        span {
+          display: block;
+          min-width: 5rem;
+          margin-right: 0.625rem;
+        }
+        color: white;
+        min-width: 50%;
+        display: flex;
+        align-items: center;
+      }
+
+      .slider-demo-block .el-slider {
+        margin-top: 0;
+      }
+      // div {
+      //   font-size: 2rem;
+      //   color: white;
+      // }
     }
     .Main {
       border: 0.125rem solid white;
@@ -983,6 +1166,817 @@ onMounted(() => {
       box-sizing: border-box;
       overflow: hidden;
       margin-left: 1.25rem;
+      .main_animation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-sizing: border-box;
+        .wrapper {
+          position: absolute;
+          float: left;
+          margin-top: 18.75rem;
+          margin-left: -18.75rem;
+        }
+
+        .line {
+          position: absolute;
+          top: 0rem;
+          width: 0.125rem;
+          height: 0.5rem;
+          background-color: red;
+        }
+
+        .circle {
+          position: absolute;
+          display: block;
+          width: 0.5rem;
+          height: 0.5rem;
+          border-radius: 50%;
+          background-color: blue;
+        }
+
+        .circle-top {
+          top: 0rem;
+          left: -0.2188rem;
+        }
+
+        .circle-bottom {
+          bottom: 0rem;
+          left: -0.2188rem;
+        }
+
+        .dot {
+          position: absolute;
+          display: block;
+          width: 0.25rem;
+          height: 0.25rem;
+          border-radius: 50%;
+          left: -0.0938rem;
+        }
+
+        .line1 {
+          margin-left: 0rem;
+          background-color: #2410cb;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+        }
+
+        .line1 > span {
+          background-color: #d4141e;
+        }
+
+        .line1 > .dotted > .dot {
+          background-color: #d4141e;
+        }
+
+        .line1 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+        }
+
+        .line1 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1)
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+        }
+
+        .line1 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) infinite;
+        }
+
+        .line1 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1)
+            infinite;
+        }
+
+        .line2 {
+          margin-left: 2.1875rem;
+          background-color: #852df4;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s infinite;
+        }
+
+        .line2 > span {
+          background-color: #fc7e48;
+        }
+
+        .line2 > .dotted > .dot {
+          background-color: #fc7e48;
+        }
+
+        .line2 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s infinite;
+        }
+
+        .line2 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+        }
+
+        .line2 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.05s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+        }
+
+        .line2 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.05s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.05s
+            infinite;
+        }
+
+        .line3 {
+          margin-left: 4.375rem;
+          background-color: #f42df1;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s infinite;
+        }
+
+        .line3 > span {
+          background-color: #edeb29;
+        }
+
+        .line3 > .dotted > .dot {
+          background-color: #edeb29;
+        }
+
+        .line3 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s infinite;
+        }
+
+        .line3 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s infinite;
+        }
+
+        .line3 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.1s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s
+            infinite;
+        }
+
+        .line3 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.1s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.1s
+            infinite;
+        }
+
+        .line4 {
+          margin-left: 6.5625rem;
+          background-color: #f91396;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s infinite;
+        }
+
+        .line4 > span {
+          background-color: #aced29;
+        }
+
+        .line4 > .dotted > .dot {
+          background-color: #aced29;
+        }
+
+        .line4 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s infinite;
+        }
+
+        .line4 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+        }
+
+        .line4 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.15s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+        }
+
+        .line4 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.15s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.15s
+            infinite;
+        }
+
+        .line5 {
+          margin-left: 8.75rem;
+          background-color: #d4141e;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s infinite;
+        }
+
+        .line5 > span {
+          background-color: #4ef02b;
+        }
+
+        .line5 > .dotted > .dot {
+          background-color: #4ef02b;
+        }
+
+        .line5 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s infinite;
+        }
+
+        .line5 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s infinite;
+        }
+
+        .line5 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.2s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s
+            infinite;
+        }
+
+        .line5 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.2s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.2s
+            infinite;
+        }
+
+        .line6 {
+          margin-left: 10.9375rem;
+          background-color: #fc7e48;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s infinite;
+        }
+
+        .line6 > span {
+          background-color: #38e790;
+        }
+
+        .line6 > .dotted > .dot {
+          background-color: #38e790;
+        }
+
+        .line6 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s infinite;
+        }
+
+        .line6 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+        }
+
+        .line6 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.25s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+        }
+
+        .line6 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.25s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.25s
+            infinite;
+        }
+
+        .line7 {
+          margin-left: 13.125rem;
+          background-color: #edeb29;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s infinite;
+        }
+
+        .line7 > span {
+          background-color: #25eacc;
+        }
+
+        .line7 > .dotted > .dot {
+          background-color: #25eacc;
+        }
+
+        .line7 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s infinite;
+        }
+
+        .line7 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s infinite;
+        }
+
+        .line7 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.3s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s
+            infinite;
+        }
+
+        .line7 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.3s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.3s
+            infinite;
+        }
+
+        .line8 {
+          margin-left: 15.3125rem;
+          background-color: #aced29;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s infinite;
+        }
+
+        .line8 > span {
+          background-color: #309cdf;
+        }
+
+        .line8 > .dotted > .dot {
+          background-color: #309cdf;
+        }
+
+        .line8 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s infinite;
+        }
+
+        .line8 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+        }
+
+        .line8 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.35s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+        }
+
+        .line8 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.35s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.35s
+            infinite;
+        }
+
+        .line9 {
+          margin-left: 17.5rem;
+          background-color: #4ef02b;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s infinite;
+        }
+
+        .line9 > span {
+          background-color: #2544e7;
+        }
+
+        .line9 > .dotted > .dot {
+          background-color: #2544e7;
+        }
+
+        .line9 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s infinite;
+        }
+
+        .line9 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s infinite;
+        }
+
+        .line9 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.4s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s
+            infinite;
+        }
+
+        .line9 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.4s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.4s
+            infinite;
+        }
+
+        .line10 {
+          margin-left: 19.6875rem;
+          background-color: #38e790;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s infinite;
+        }
+
+        .line10 > span {
+          background-color: #852df4;
+        }
+
+        .line10 > .dotted > .dot {
+          background-color: #852df4;
+        }
+
+        .line10 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s infinite;
+        }
+
+        .line10 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+        }
+
+        .line10 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.45s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+        }
+
+        .line10 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.45s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.45s
+            infinite;
+        }
+
+        .line11 {
+          margin-left: 21.875rem;
+          background-color: #25eacc;
+          -webkit-animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s
+            infinite;
+          animation: line 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s infinite;
+        }
+
+        .line11 > span {
+          background-color: #f42df1;
+        }
+
+        .line11 > .dotted > .dot {
+          background-color: #f42df1;
+        }
+
+        .line11 > .dotted > .dot-top {
+          top: 0rem;
+          -webkit-animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s
+            infinite;
+          animation: dot-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s infinite;
+        }
+
+        .line11 > .dotted > .dot-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s
+            infinite;
+          animation: dot-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s infinite;
+        }
+
+        .line11 > .dotted > .dot-middle-top {
+          top: 0rem;
+          -webkit-animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1)
+            0.5s infinite;
+          animation: dot-middle-top 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s
+            infinite;
+        }
+
+        .line11 > .dotted > .dot-middle-bottom {
+          bottom: 0rem;
+          -webkit-animation: dot-middle-bottom 2s
+            cubic-bezier(0.25, 0, 0.705, 1) 0.5s infinite;
+          animation: dot-middle-bottom 2s cubic-bezier(0.25, 0, 0.705, 1) 0.5s
+            infinite;
+        }
+
+        @-webkit-keyframes line {
+          0% {
+            height: 0.25rem;
+            top: 0rem;
+            left: 0rem;
+            -webkit-transform: rotate(-65deg);
+          }
+
+          10% {
+            height: 13.75rem;
+            top: -6.875rem;
+            left: 0.9375rem;
+          }
+
+          45% {
+            height: 12.5rem;
+            top: -6.25rem;
+            left: 1.5625rem;
+          }
+
+          70% {
+            height: 0.5rem;
+            top: 0rem;
+            left: 1.5625rem;
+            -webkit-transform: rotate(0deg);
+          }
+
+          100% {
+            height: 0.5rem;
+            top: 0rem;
+            left: 0.9375rem;
+            -webkit-transform: rotate(0deg);
+          }
+        }
+
+        @-webkit-keyframes dot-top {
+          0% {
+            top: -1.875rem;
+          }
+
+          10% {
+            top: -1.875rem;
+          }
+
+          45% {
+            top: -1.5625rem;
+          }
+
+          60% {
+            top: 0rem;
+          }
+
+          100% {
+            top: 0rem;
+          }
+        }
+
+        @-webkit-keyframes dot-bottom {
+          0% {
+            bottom: -1.875rem;
+          }
+
+          10% {
+            bottom: -1.875rem;
+          }
+
+          45% {
+            bottom: -1.5625rem;
+          }
+
+          60% {
+            bottom: 0rem;
+          }
+
+          100% {
+            bottom: 0rem;
+          }
+        }
+
+        @-webkit-keyframes dot-middle-top {
+          0% {
+          }
+
+          10% {
+          }
+
+          45% {
+            top: 6.125rem;
+          }
+
+          70% {
+            top: -3.125rem;
+          }
+
+          85% {
+            top: 0rem;
+          }
+
+          100% {
+            top: 0rem;
+          }
+        }
+
+        @-webkit-keyframes dot-middle-bottom {
+          0% {
+          }
+
+          10% {
+          }
+
+          45% {
+            bottom: 6.125rem;
+          }
+
+          70% {
+            bottom: -3.125rem;
+          }
+
+          85% {
+            bottom: 0rem;
+          }
+
+          100% {
+            bottom: 0rem;
+          }
+        }
+
+        @keyframes line {
+          0% {
+            height: 0.25rem;
+            top: 0rem;
+            left: 0rem;
+            transform: rotate(-65deg);
+          }
+
+          10% {
+            height: 13.75rem;
+            top: -6.875rem;
+            left: 0.9375rem;
+          }
+
+          45% {
+            height: 12.5rem;
+            top: -6.25rem;
+            left: 1.5625rem;
+          }
+
+          70% {
+            height: 0.5rem;
+            top: 0rem;
+            left: 1.5625rem;
+            transform: rotate(0deg);
+          }
+
+          100% {
+            height: 0.5rem;
+            top: 0rem;
+            left: 0.9375rem;
+            transform: rotate(0deg);
+          }
+        }
+
+        @keyframes dot-top {
+          0% {
+            top: -1.875rem;
+          }
+
+          10% {
+            top: -1.875rem;
+          }
+
+          45% {
+            top: -1.5625rem;
+          }
+
+          60% {
+            top: 0rem;
+          }
+
+          100% {
+            top: 0rem;
+          }
+        }
+
+        @keyframes dot-bottom {
+          0% {
+            bottom: -1.875rem;
+          }
+
+          10% {
+            bottom: -1.875rem;
+          }
+
+          45% {
+            bottom: -1.5625rem;
+          }
+
+          60% {
+            bottom: 0rem;
+          }
+
+          100% {
+            bottom: 0rem;
+          }
+        }
+
+        @keyframes dot-middle-top {
+          0% {
+          }
+
+          10% {
+          }
+
+          45% {
+            top: 4.875rem;
+          }
+
+          70% {
+            top: -3.125rem;
+          }
+
+          85% {
+            top: 0rem;
+          }
+
+          100% {
+            top: 0rem;
+          }
+        }
+
+        @keyframes dot-middle-bottom {
+          0% {
+          }
+
+          10% {
+          }
+
+          45% {
+            bottom: 4.875rem;
+          }
+
+          70% {
+            bottom: -3.125rem;
+          }
+
+          85% {
+            bottom: 0rem;
+          }
+
+          100% {
+            bottom: 0rem;
+          }
+        }
+      }
       .el-scrollbar {
         width: 100%;
         .scrollbar-demo-item {
@@ -1003,6 +1997,9 @@ onMounted(() => {
           img {
             width: 3.125rem;
           }
+          .msg {
+            white-space: pre-wrap;
+          }
           .image {
             margin: 0 0.9375rem;
             .user {
@@ -1022,7 +2019,7 @@ onMounted(() => {
             display: block;
             font-size: 0;
             color: white;
-            margin-left: 20px;
+            margin-left: 1.25rem;
           }
 
           .loading.la-dark {
@@ -1037,18 +2034,18 @@ onMounted(() => {
           }
 
           .loading {
-            width: 120px;
-            height: 10px;
+            width: 7.5rem;
+            height: 0.625rem;
             font-size: 0;
             text-align: center;
-            margin-left: 50px;
-            margin-top: -30px;
+            margin-left: 3.125rem;
+            margin-top: -1.875rem;
           }
 
           .loading > div {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 0.625rem;
+            height: 0.625rem;
             white-space: nowrap;
             border-radius: 100%;
             animation: ball-elastic-dots-anim 1s infinite;
@@ -1071,6 +2068,9 @@ onMounted(() => {
           background: #2c3350;
           display: flex;
           justify-content: flex-start;
+          .msg {
+            white-space: pre-wrap;
+          }
         }
       }
       .Footer {
@@ -1118,8 +2118,31 @@ onMounted(() => {
               outline: none;
               border: none;
               font-size: 1.125rem;
+              box-sizing: border-box;
               padding: 0.625rem;
+              padding-right: 6.25rem;
               border-radius: 0.3125rem 0.3125rem 0 0;
+            }
+            ::-webkit-scrollbar {
+              width: 0.3125rem;
+              height: 0.625rem;
+            }
+
+            ::-webkit-scrollbar-button {
+              display: none;
+            }
+
+            ::-webkit-scrollbar-thumb {
+              background-color: rgba(49, 48, 48, 0.2);
+              border-radius: 0.1875rem;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+              background-color: rgba(0, 0, 0, 0.4);
+            }
+
+            ::-webkit-scrollbar-track {
+              background-color: rgba(0, 0, 0, 0);
             }
           }
 
@@ -1132,6 +2155,13 @@ onMounted(() => {
             position: absolute;
             right: 1.25rem;
             bottom: 0.9375rem;
+          }
+          .SendLogo:hover {
+            background: linear-gradient(
+              to right,
+              rgba(126, 114, 242, 1),
+              rgb(207, 205, 221)
+            );
           }
         }
 
@@ -1202,13 +2232,14 @@ onMounted(() => {
         }
       }
       .vipinfo {
-        font-size: 0.75rem;
+        font-size: 1.25rem;
+        font-size: 1.625rem;
         height: 100%;
         display: flex;
+        align-items: center;
         justify-content: center;
         flex-direction: column;
         align-items: flex-start;
-        margin-left: 0.9375rem;
         .topUp {
           display: flex;
           div {
@@ -1217,12 +2248,12 @@ onMounted(() => {
         }
       }
       .logout {
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
         color: white;
-        min-width: 2.5rem;
         font-size: 1rem;
       }
     }
@@ -1271,13 +2302,16 @@ onMounted(() => {
             font-size: 1rem;
           }
           .toAssistant {
-            border-bottom: 1px solid #ccc;
+            border-bottom: 0.0625rem solid #ccc;
             cursor: pointer;
           }
         }
         .bottom {
           width: 100%;
         }
+      }
+      ::-webkit-scrollbar {
+        display: none;
       }
       .islogin {
         width: 100%;
@@ -1288,6 +2322,14 @@ onMounted(() => {
         border: 0.125rem solid white;
         border-left: none;
         margin-right: 1.25rem;
+        padding: 1.25rem 0;
+        overflow-y: scroll;
+        .toAssistant {
+          border-bottom: 0.0625rem solid #ccc;
+          cursor: pointer;
+          color: white;
+        }
+
         .lists {
           width: 100%;
           display: flex;
@@ -1296,6 +2338,7 @@ onMounted(() => {
           box-sizing: border-box;
           flex-direction: column;
           margin-top: 0.625rem;
+
           .lists_item {
             display: flex;
             align-items: center;
@@ -1373,6 +2416,13 @@ onMounted(() => {
             padding: 0.625rem 1.875rem;
             cursor: pointer;
             border: none;
+          }
+          button:hover {
+            background: linear-gradient(
+              to right,
+              rgba(126, 114, 242, 1),
+              rgb(207, 205, 221)
+            );
           }
         }
       }
